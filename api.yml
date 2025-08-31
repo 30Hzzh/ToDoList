@@ -1,0 +1,211 @@
+openapi: "3.0.3"
+info:
+  title: XXX 项目 API
+  version: "1.0"
+servers:
+  - url: http://127.0.0.1:3001/
+    description: 开发环境
+  - url: https://test.server.test/v1
+    description: 测试环境
+  - url: https://uat.server.test/v1
+  - url: https://prod.server.test/v1
+paths:
+  /books:
+    get:
+      summary: Get all books
+      tags:
+        - 图书管理
+      responses:
+        200:
+          description: Get all books
+
+  /todos/{id}:
+    get:
+      summary: Get a todo by ID
+      tags:
+        - 待办事项
+      responses:
+        200:
+          description: Get a todo by ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Todo ID
+                  title:
+                    type: string
+                    description: Todo title
+                  status:
+                    type: string
+                    description: Todo completion status
+              examples:
+                example1:
+                  value:
+                    id: 1
+                    title: "Todo 1"
+                    status: "done"
+
+    put:
+      summary: Update a todo
+      tags:
+        - 待办事项
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Todo"
+            examples:
+              example1:
+                value:
+                  id: 1
+                  title: "Todo 1"
+                  status: "done"
+      responses:
+        200:
+          description: Update a todo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+
+    patch:
+      summary: Update a todo's status
+      tags:
+        - 待办事项
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  $ref: "#/components/schemas/TodoStatus"
+      responses:
+        200:
+          description: Update a todo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+
+    delete:
+      summary: Delete a todo
+      tags:
+        - 待办事项
+      responses:
+        204:
+          description: Todo deleted successfully
+
+  /todos:
+    get:
+      summary: Get all todos
+      tags:
+        - 待办事项
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Get all todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    todos:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/Todo"
+                    pagination:
+                      type: object
+                      $ref: "#/components/schemas/Pagination"
+    post:
+      summary: Create a todo
+      tags:
+        - 待办事项
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestTodo"
+      responses:
+        201:
+          description: Create a todo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+              examples:
+                example1:
+                  value:
+                    id: 1
+                    title: "Todo 1"
+                    status: "done"
+
+components:
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The book ID.
+        title:
+          type: string
+          description: The book title.
+        status:
+          type: string
+          description: The todo status.
+    RequestTodo:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The todo title.
+
+    TodoStatus:
+      type: string
+      enum:
+        - todo
+        - doing
+        - done
+      description: The status of the todo.
+
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: 总条数
+        page:
+          type: integer
+          description: The current page number
+        limit:
+          type: integer
+          description: the number of items per page
+        totalPages:
+          type: integer
+          description: 总页数
+
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # optional, arbitrary value for documentation purposes

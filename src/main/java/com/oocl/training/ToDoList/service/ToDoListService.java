@@ -1,0 +1,52 @@
+package com.oocl.training.ToDoList.service;
+
+import com.oocl.training.ToDoList.dao.ToDoListDao;
+import com.oocl.training.ToDoList.model.ToDo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ToDoListService {
+
+    @Autowired
+    private ToDoListDao toDoListDao;
+
+    public List<ToDo> getToDos() {
+        return toDoListDao.getToDos();
+    }
+
+    public ToDo getToDoById(Integer id) {
+        return toDoListDao.getToDoById(id);
+    }
+
+    public ToDo updateToDoById(Integer id, ToDo toDo) {
+        ToDo existingToDo = toDoListDao.getToDoById(id);
+        if (existingToDo == null) {
+            throw new RuntimeException("ToDo not found");
+        }
+        return toDoListDao.updateToDoById(id, toDo);
+    }
+
+    public ToDo addToDo(ToDo toDo) {
+        toDoListDao.addToDo(toDo);
+        return toDo;
+    }
+
+    public ToDo updateTodoSatusById(Integer id, String status) {
+        ToDo existingToDo = toDoListDao.getToDoById(id);
+        if (existingToDo == null) {
+            throw new RuntimeException("ToDo not found");
+        }
+        return toDoListDao.updateToDoStatusById(id, status);
+    }
+
+    public void deleteToDoById(Integer id) {
+        ToDo existingToDo = toDoListDao.getToDoById(id);
+        if (existingToDo == null) {
+            throw new RuntimeException("ToDo not found");
+        }
+        toDoListDao.updateToDoStatusById(id, "deleted");
+    }
+}
