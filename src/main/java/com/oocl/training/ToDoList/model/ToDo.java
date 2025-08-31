@@ -16,5 +16,10 @@ public class ToDo {
     private Integer id;
     private String title;
     private String status;
+
+    public ToDo(String title1, String todo) {
+        this.title = title1;
+        this.status = todo;
+    }
 }
 
