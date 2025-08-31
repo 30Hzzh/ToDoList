@@ -44,6 +44,7 @@ public class ToDoListController {
     }
 
     @PostMapping("")
+    @ResponseStatus(code = org.springframework.http.HttpStatus.CREATED)
     public ToDoListResponse addToDo(@Valid @RequestBody ToDoListRequest toDoListRequest) {
         ToDo toDo = toDoListMapper.toEntity(toDoListRequest);
         ToDo newToDo = toDoListService.addToDo(toDo);
@@ -60,6 +61,7 @@ public class ToDoListController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(code = org.springframework.http.HttpStatus.NO_CONTENT)
     public void deleteToDoById(@PathVariable Integer id) {
         toDoListService.deleteToDoById(id);
     }

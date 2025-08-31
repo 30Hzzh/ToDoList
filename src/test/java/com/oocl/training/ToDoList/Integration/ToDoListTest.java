@@ -54,4 +54,84 @@ public class ToDoListTest {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].status").value(expectedEmployees.get(0).getStatus()));
 
     }
+
+    @Test
+    public void should_return_todo_when_get_todo_by_id_given_id() throws Exception {
+//    given
+        ToDo expectedToDo = toDoListDao.getToDos().get(0);
+//    when
+        ResultActions result = client.perform(MockMvcRequestBuilders.get("/todos/{id}", expectedToDo.getId()));
+//        then
+        result.andExpect(MockMvcResultMatchers.status().isOk());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expectedToDo.getId()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.status").value(expectedToDo.getStatus()));
+    }
+
+    @Test
+    public void should_return_updated_todo_when_update_todo_by_id_given_id_and_todo() throws Exception {
+//    given
+        ToDo toUpdateToDo = toDoListDao.getToDos().get(0);
+        String updatedTitle = "updated title";
+        String updatedStatus = "doing";
+        String updateToDoJson = String.format("{\"title\":\"%s\",\"status\":\"%s\"}", updatedTitle, updatedStatus);
+//    when
+        ResultActions result = client.perform(MockMvcRequestBuilders.put("/todos/{id}", toUpdateToDo.getId())
+                .contentType("application/json")
+                .content(updateToDoJson));
+
+//        then
+        result.andExpect(MockMvcResultMatchers.status().isOk());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(toUpdateToDo.getId()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.title").value(updatedTitle));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.status").value(updatedStatus));
+    }
+
+    @Test
+    public void should_return_added_todo_when_add_todo_given_todo() throws Exception {
+//    given
+        String newTitle = "new title";
+        String newStatus = "todo";
+        String newToDoJson = String.format("{\"title\":\"%s\",\"status\":\"%s\"}", newTitle, newStatus);
+//    when
+        ResultActions result = client.perform(MockMvcRequestBuilders.post("/todos")
+                .contentType("application/json")
+                .content(newToDoJson));
+//        then
+        result.andExpect(MockMvcResultMatchers.status().isCreated());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.title").value(newTitle));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.status").value(newStatus));
+    }
+
+    @Test
+    public void should_return_updated_todo_when_update_todo_status_by_id_given_id_and_status() throws Exception {
+//    given
+        ToDo toUpdateToDo = toDoListDao.getToDos().get(0);
+        String updatedStatus = "done";
+        String updateStatusJson = String.format("{\"status\":\"%s\"}", updatedStatus);
+
+
+//    when
+        ResultActions result = client.perform(MockMvcRequestBuilders.patch("/todos/{id}", toUpdateToDo.getId())
+                .contentType("application/json")
+                .content(updateStatusJson));
+//        then
+        result.andExpect(MockMvcResultMatchers.status().isOk());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(toUpdateToDo.getId()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.title").value(toUpdateToDo.getTitle()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.status").value(updatedStatus));
+    }
+
+    @Test
+    public void should_return_nothing_when_delete_todo_by_id_given_id() throws Exception {
+//    given
+        ToDo toDeleteToDo = toDoListDao.getToDos().get(0);
+//    when
+        ResultActions result = client.perform(MockMvcRequestBuilders.delete("/todos/{id}", toDeleteToDo.getId()));
+//        then
+        result.andExpect(MockMvcResultMatchers.status().isNoContent());
+        ToDo deletedToDo = toDoListDao.getToDoById(toDeleteToDo.getId());
+        assert(deletedToDo.getStatus().equals("deleted"));
+    }
+
 }
