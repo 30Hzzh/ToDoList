@@ -7,7 +7,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,14 +31,14 @@ public class ToDoListTest {
 
     @BeforeAll
     public void setup(){
-        toDoListDao.addToDo(new ToDo("title1", "todo"));
-        toDoListDao.addToDo(new ToDo("title2", "doing"));
-        toDoListDao.addToDo(new ToDo("title3", "done"));
+        toDoListDao.addToDo(new ToDo("title1", true));
+        toDoListDao.addToDo(new ToDo("title2", false));
+        toDoListDao.addToDo(new ToDo("title3", true));
     }
 
     @AfterAll
     public void tearDown(){
-        toDoListDao.getToDos().forEach(todo -> toDoListDao.updateToDoStatusById(todo.getId(), "deleted"));
+        toDoListDao.getToDos().forEach(todo -> toDoListDao.updateToDoStatusById(todo.getId(), true));
     }
 
     @Test
@@ -51,7 +50,7 @@ public class ToDoListTest {
 //        then
         result.andExpect(MockMvcResultMatchers.status().isOk());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].id").value(expectedEmployees.get(0).getId()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].status").value(expectedEmployees.get(0).getStatus()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].status").value(expectedEmployees.get(0).getCompleted()));
 
     }
 
@@ -64,7 +63,7 @@ public class ToDoListTest {
 //        then
         result.andExpect(MockMvcResultMatchers.status().isOk());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expectedToDo.getId()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.status").value(expectedToDo.getStatus()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.status").value(expectedToDo.getCompleted()));
     }
 
     @Test
@@ -131,7 +130,7 @@ public class ToDoListTest {
 //        then
         result.andExpect(MockMvcResultMatchers.status().isNoContent());
         ToDo deletedToDo = toDoListDao.getToDoById(toDeleteToDo.getId());
-        assert(deletedToDo.getStatus().equals("deleted"));
+        assert(deletedToDo.getCompleted().equals("deleted"));
     }
 
 }

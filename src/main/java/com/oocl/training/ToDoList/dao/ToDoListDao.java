@@ -15,5 +15,5 @@ public interface ToDoListDao {
 
     ToDo updateToDoById(Integer id, ToDo toDo);
 
-    ToDo updateToDoStatusById(Integer id, String status);
+    ToDo updateToDoStatusById(Integer id, Boolean status);
 }

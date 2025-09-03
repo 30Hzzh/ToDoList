@@ -15,11 +15,11 @@ public class ToDo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String title;
-    private String status;
+    private Boolean completed;
 
-    public ToDo(String title1, String todo) {
+    public ToDo(String title1, Boolean todo) {
         this.title = title1;
-        this.status = todo;
+        this.completed = todo;
     }
 }
 

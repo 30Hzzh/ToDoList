@@ -17,7 +17,7 @@ public class ToDoListDbDao implements ToDoListDao {
     @Override
     public List<ToDo> getToDos() {
         // 状态为deleted的过滤
-        List<ToDo> toDos = jpaToDoListDao.findAll().stream().filter(toDo -> !"deleted".equals(toDo.getStatus())).toList();
+        List<ToDo> toDos = jpaToDoListDao.findAll().stream().filter(toDo -> !"deleted".equals(toDo.getCompleted())).toList();
         return toDos;
     }
 
@@ -38,17 +38,17 @@ public class ToDoListDbDao implements ToDoListDao {
             throw new RuntimeException("ToDo not found");
         }
         existingToDo.setTitle(toDo.getTitle());
-        existingToDo.setStatus(toDo.getStatus());
+        existingToDo.setCompleted(toDo.getCompleted());
         return jpaToDoListDao.save(existingToDo);
     }
 
     @Override
-    public ToDo updateToDoStatusById(Integer id, String status) {
+    public ToDo updateToDoStatusById(Integer id, Boolean status) {
         ToDo toDo = jpaToDoListDao.findById(id).orElse(null);
         if (toDo == null) {
             throw new RuntimeException("ToDo not found");
         }
-        toDo.setStatus(status);
+        toDo.setCompleted(status);
         return jpaToDoListDao.save(toDo);
     }
 }

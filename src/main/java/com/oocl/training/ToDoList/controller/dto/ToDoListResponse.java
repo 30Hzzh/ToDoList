@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class ToDoListResponse {
     private Integer id;
     private String title;
-    private String status;
+    private Boolean completed;
 }

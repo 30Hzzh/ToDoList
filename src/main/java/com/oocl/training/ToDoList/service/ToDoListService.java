@@ -13,8 +13,18 @@ public class ToDoListService {
     @Autowired
     private ToDoListDao toDoListDao;
 
-    public List<ToDo> getToDos() {
-        return toDoListDao.getToDos();
+    public List<ToDo> getToDos(Integer page,Integer size) {
+
+       List<ToDo> toDos =  toDoListDao.getToDos();
+        if (page != null && size != null) {
+            int fromIndex = (page - 1) * size;
+            int toIndex = Math.min(fromIndex + size, toDos.size());
+            if (fromIndex >= toDos.size()) {
+                return List.of(); // Return empty list if page is out of bounds
+            }
+            return toDos.subList(fromIndex, toIndex);
+        }
+        return toDos;
     }
 
     public ToDo getToDoById(Integer id) {
@@ -34,7 +44,7 @@ public class ToDoListService {
         return toDo;
     }
 
-    public ToDo updateTodoSatusById(Integer id, String status) {
+    public ToDo updateTodoSatusById(Integer id, Boolean status) {
         ToDo existingToDo = toDoListDao.getToDoById(id);
         if (existingToDo == null) {
             throw new RuntimeException("ToDo not found");
@@ -47,6 +57,6 @@ public class ToDoListService {
         if (existingToDo == null) {
             throw new RuntimeException("ToDo not found");
         }
-        toDoListDao.updateToDoStatusById(id, "deleted");
+        toDoListDao.updateToDoStatusById(id, true);
     }
 }

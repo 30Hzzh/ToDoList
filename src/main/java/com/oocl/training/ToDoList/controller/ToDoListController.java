@@ -3,7 +3,6 @@ package com.oocl.training.ToDoList.controller;
 import com.oocl.training.ToDoList.controller.dto.ToDoListRequest;
 import com.oocl.training.ToDoList.controller.dto.ToDoListResponse;
 import com.oocl.training.ToDoList.controller.mapper.ToDoListMapper;
-import com.oocl.training.ToDoList.dao.ToDoListDao;
 import com.oocl.training.ToDoList.model.ToDo;
 import com.oocl.training.ToDoList.service.ToDoListService;
 import jakarta.validation.Valid;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController()
 @RequestMapping("/todos")
@@ -23,8 +21,8 @@ public class ToDoListController {
     private ToDoListMapper toDoListMapper;
 
     @GetMapping("")
-    public List<ToDoListResponse> getToDos() {
-        List<ToDo> todos =  toDoListService.getToDos();
+    public List<ToDoListResponse> getToDos(@RequestParam (required = false )Integer page,@RequestParam(required = false) Integer size) {
+        List<ToDo> todos =  toDoListService.getToDos(page,size);
         List<ToDoListResponse> responses = toDoListMapper.toResponse(todos);
         return responses;
     }
@@ -55,7 +53,7 @@ public class ToDoListController {
     @PatchMapping("/{id}")
     public ToDoListResponse updateToDoStatusById(@PathVariable Integer id, @RequestBody ToDoListRequest toDoRequest) {
         ToDo toDo = toDoListMapper.toEntity(toDoRequest);
-        ToDo updatedToDo = toDoListService.updateTodoSatusById(id, toDo.getStatus());
+        ToDo updatedToDo = toDoListService.updateTodoSatusById(id, toDo.getCompleted());
         ToDoListResponse response = toDoListMapper.toResponse(updatedToDo);
         return response;
     }

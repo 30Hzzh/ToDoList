@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ToDoListRequest {
     private String title;
-    private String status;
+    private Boolean completed;
 }
